@@ -1,11 +1,23 @@
 import pandas as pd
 
-import sqlite3
-# Create your connection.
-cnx = sqlite3.connect('db.sqlite3')
+from fin_web_graphs.models import Olhc
 
-pd_df = pd.read_csv('data.csv', index_col=[0])
+CSV_PATH = 'data.csv'
 
-print(pd_df.iloc[:2])
+Olhc.objects.all().delete()
 
-pd_df.to_sql(name='fin_web_graphs_olhc', con=cnx)
+pd_df = pd.read_csv(CSV_PATH, index_col=[0]).reset_index()
+pd_df['date'] = pd.to_datetime(pd_df['date'])
+
+for index, x in pd_df.iterrows():
+    print(x.keys())
+    olhc = Olhc()
+    olhc.date = x['date']
+    olhc.open = x['open']
+    olhc.high = x['high']
+    olhc.low = x['low']
+    olhc.close = x['close']
+    olhc.volume = x['volume']
+    olhc.market_cap = x['market_cap']
+
+    olhc.save()

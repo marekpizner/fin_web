@@ -36,11 +36,14 @@ class GraphOpen(TemplateView):
         data = Olhc.objects.all()
 
         context = super(GraphOpen, self).get_context_data(**kwargs)
-
-        for x in data:
+        x = []
+        y = []
+        for d in data:
+            x.append(d.date)
+            y.append(d.open)
             print(x)
-        x = data['open']
-        y = data['date']
+        # x = data['open']
+        # y = data['date']
         trace1 = go.Scatter(x=x, y=y, marker={'color': 'red', 'symbol': 104, 'size': 10},
                             mode="lines", name='1st Trace')
 

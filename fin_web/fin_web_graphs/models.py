@@ -13,4 +13,4 @@ class Olhc(models.Model):
     market_cap = models.IntegerField()
 
     def __str__(self):
-        return self.date
+        return str(self.date)
