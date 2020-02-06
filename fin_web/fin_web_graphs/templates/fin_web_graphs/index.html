@@ -1,0 +1,12 @@
+{% extends "fin_web_graphs/header.html" %}
+{% block content %}
+    {% for graph in graphs %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="/{{ graph.title }}">{{ graph.title }}</a>
+            </div>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
