@@ -1,18 +1,20 @@
 {% extends "fin_web_graphs/header.html" %}
 {% block content %}
 {% for graph in graphs %}
-
-<article class="media content-section">
-    <div class="media-left">
-        {% load static %}
-        <img src="{% static graph.icon  %}" class="img-thumbnail" />
-    </div>
-    <div class="media-body">
-        <div class="article-metadata">
-            <a class="mr-2" href="/{{ graph.url }}">{{ graph.title }}</a>
+<div class="col-md-10">
+    <article class="media content-section">
+        <div class="media-left">
+            {% load static %}
+            <img src="{% static graph.icon  %}" class="img-responsive img-rounded"
+                 style="max-height: 50px; max-width: 50px;"/>
         </div>
-    </div>
-</article>
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="/{{ graph.url }}">{{ graph.title }}</a>
+            </div>
+        </div>
+    </article>
+</div>
 
 {% endfor %}
 {% endblock content %}

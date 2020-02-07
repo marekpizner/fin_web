@@ -3,6 +3,7 @@ from django.template import loader
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
+import pandas as pd
 import plotly.offline as opy
 import plotly.graph_objs as go
 
@@ -60,11 +61,23 @@ class GraphOpen(TemplateView):
         for d in data:
             x.append(d.date)
             y.append(float(d.open))
+        df = pd.DataFrame({"date": x, "value": y})
+        df = df.iloc[::-1]
 
-        trace1 = go.Scatter(x=x, y=y, marker_color='rgba(0, 0, 255, .8)', mode="lines")
+        df['EMA'] = df['value'].rolling(window=365).mean()
+        df['EMA2'] = df['value'].rolling(window=365 * 2).mean() * 5
 
-        data = go.Data([trace1])
-        layout = go.Layout(title="Opne", xaxis={'title': 'Date'}, yaxis={'title': 'Value'}, height=800)
+        trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines", name='Price')
+        trace2 = go.Scatter(x=df['date'], y=df['EMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
+                            name='EMA 1 year')
+        trace3 = go.Scatter(x=df['date'], y=df['EMA2'], marker_color='rgba(255, 0, 0, .8)', mode="lines",
+                            name="EMA 2 years * 5")
+
+        data = go.Data([trace1, trace2, trace3])
+        layout = go.Layout(title="Opne", xaxis={'title': 'Date'}, yaxis_type="log", yaxis_showgrid=False,
+                           yaxis={'title': 'Value'}, legend_orientation="h",
+                           height=800)
+
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
