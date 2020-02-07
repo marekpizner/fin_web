@@ -1,7 +1,9 @@
 {% extends "fin_web_graphs/header.html" %}
 {% block content %}
 {% if graph %}
-<div style="width:600;height:500">
+
+<h1>{{title}}</h1>
+<div>
     {{ graph|safe }}
 </div>
 {% endif %}
