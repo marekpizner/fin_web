@@ -67,15 +67,38 @@ class GraphOpen(TemplateView):
         df['EMA'] = df['value'].rolling(window=365).mean()
         df['EMA2'] = df['value'].rolling(window=365 * 2).mean() * 5
 
-        trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines", name='Price')
+        # ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx',
+        #  'toself', 'tonext']
+
+        trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
+                            name='Price BTC (USD)',
+                            fill=None)
+
         trace2 = go.Scatter(x=df['date'], y=df['EMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
-                            name='EMA 1 year')
+                            name='Moving average 1 year')
+
         trace3 = go.Scatter(x=df['date'], y=df['EMA2'], marker_color='rgba(255, 0, 0, .8)', mode="lines",
-                            name="EMA 2 years * 5")
+                            name="Moving average 2 years * 5")
 
         data = go.Data([trace1, trace2, trace3])
-        layout = go.Layout(title="Opne", xaxis={'title': 'Date'}, yaxis_type="log", yaxis_showgrid=False,
-                           yaxis={'title': 'Value'}, legend_orientation="h",
+
+        layout = go.Layout(title="Opne",
+
+                           xaxis={'title': 'Date', 'showline': True, 'linecolor': 'black', "showspikes": True,
+                                  'spikemode': 'across', "spikesnap": 'cursor', "spikethickness": 1,
+                                  'spikedash': 'solid',
+                                  "spikecolor": 'black',
+                                  'linewidth': 2},
+                           xaxis_showgrid=True,
+                           xaxis_gridcolor='rgb(10,10,10)',
+
+                           yaxis={'title': 'Price BTC (USD)', 'side': 'right', 'showline': True, 'linecolor': 'black',
+                                  'linewidth': 2},
+                           yaxis_type="log",
+                           yaxis_showgrid=False,
+
+                           legend_orientation="h",
+                           plot_bgcolor='rgb(255,255,255)',
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
