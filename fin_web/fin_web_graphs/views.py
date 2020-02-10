@@ -6,12 +6,13 @@ from django.views.generic import TemplateView
 import pandas as pd
 import plotly.offline as opy
 import plotly.graph_objs as go
+import numpy as np
 
 from .models import Olhc
 
 list_of_graphs = [
     {
-        'title': 'Open',
+        'title': '2-Year MA Multiplier',
         'url': 'graph_open',
         'icon': 'fin_web_graphs/img/b.png'
     },
@@ -60,7 +61,7 @@ class GraphOpen(TemplateView):
 
         for d in data:
             x.append(d.date)
-            y.append(float(d.open))
+            y.append((float(d.high) + float(d.low)) / 2)
         df = pd.DataFrame({"date": x, "value": y})
         df = df.iloc[::-1]
 
@@ -71,8 +72,7 @@ class GraphOpen(TemplateView):
         #  'toself', 'tonext']
 
         trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
-                            name='Price BTC (USD)',
-                            fill=None)
+                            name='Price BTC (USD)')
 
         trace2 = go.Scatter(x=df['date'], y=df['EMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
                             name='Moving average 1 year')
@@ -82,30 +82,49 @@ class GraphOpen(TemplateView):
 
         data = go.Data([trace1, trace2, trace3])
 
-        layout = go.Layout(title="Opne",
+        layout = go.Layout(title="Bitcoin Investor Tool: 2-Year MA Multiplier",
 
-                           xaxis={'title': 'Date', 'showline': True, 'linecolor': 'black', "showspikes": True,
-                                  'spikemode': 'across', "spikesnap": 'cursor', "spikethickness": 1,
+                           xaxis={'title': 'Date',
+                                  'showline': True,
+                                  'linecolor': 'black',
+                                  'linewidth': 1,
+
+                                  "showspikes": True,
+                                  'spikemode': 'across',
+                                  "spikesnap": 'cursor',
+                                  "spikethickness": 1,
                                   'spikedash': 'solid',
-                                  "spikecolor": 'black',
-                                  'linewidth': 2},
-                           xaxis_showgrid=True,
-                           xaxis_gridcolor='rgb(10,10,10)',
+                                  "spikecolor": 'black'
 
-                           yaxis={'title': 'Price BTC (USD)', 'side': 'right', 'showline': True, 'linecolor': 'black',
-                                  'linewidth': 2},
+                                  },
+                           xaxis_showgrid=True,
+                           xaxis_gridcolor='rgba(128,128,128,.5)',
+
+                           yaxis={'title': 'Price BTC (USD)',
+                                  'side': 'right',
+                                  'showline': True,
+                                  'linecolor': 'black',
+                                  'linewidth': 2,
+
+                                  "showspikes": True,
+                                  "spikesnap": 'data',
+                                  "spikethickness": 1,
+                                  'spikedash': 'solid',
+                                  "spikecolor": 'black'
+                                  },
                            yaxis_type="log",
                            yaxis_showgrid=False,
 
                            legend_orientation="h",
                            plot_bgcolor='rgb(255,255,255)',
+
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         context['graph'] = div
-        context['title'] = 'Graph open'
+        context['title'] = 'Bitcoin Investor Tool: 2-Year MA Multiplier'
         return context
 
 
@@ -121,17 +140,75 @@ class GraphClose(TemplateView):
 
         for d in data:
             x.append(d.date)
-            y.append(float(d.close))
+            y.append((float(d.high) + float(d.low)) / 2)
 
-        trace1 = go.Scatter(x=x, y=y, marker_color='rgba(255, 0, 0, .8)', mode="lines")
+        df = pd.DataFrame({"date": x, "value": y})
+        df = df.iloc[::-1]
 
-        data = go.Data([trace1])
-        layout = go.Layout(title="Close", xaxis={'title': 'Date'}, yaxis={'title': 'Value'}, height=800)
+        dates = pd.date_range(end=df.iloc[0]['date'], periods=1400, freq='D')
+        values = np.random.randint(df[:100]['value'].min(), df[:100]['value'].mean(), len(dates))
+
+        df2 = pd.DataFrame({"date": dates.date, "value": values})
+        df = df.append(df2)
+        df.sort_values(by=['date'], inplace=True)
+
+        df['EMA'] = df['value'].rolling(window=1400).mean()
+
+        df = df.iloc[1400:]
+        # ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx',
+        #  'toself', 'tonext']
+
+        trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
+                            name='Price BTC (USD)')
+
+        trace2 = go.Scatter(x=df['date'], y=df['EMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
+                            name='Moving average 1 year')
+
+        data = go.Data([trace1, trace2])
+
+        layout = go.Layout(title="200 Week Moving Average Heatmap",
+
+                           xaxis={'title': 'Date',
+                                  'showline': True,
+                                  'linecolor': 'black',
+                                  'linewidth': 2,
+
+                                  "showspikes": True,
+                                  'spikemode': 'across',
+                                  "spikesnap": 'cursor',
+                                  "spikethickness": 1,
+                                  'spikedash': 'solid',
+                                  "spikecolor": 'black'
+
+                                  },
+                           xaxis_showgrid=True,
+                           xaxis_gridcolor='rgba(128,128,128,.5)',
+
+                           yaxis={'title': 'Price BTC (USD)',
+                                  'side': 'right',
+                                  'showline': True,
+                                  'linecolor': 'black',
+                                  'linewidth': 2,
+
+                                  "showspikes": True,
+                                  "spikesnap": 'data',
+                                  "spikethickness": 1,
+                                  'spikedash': 'solid',
+                                  "spikecolor": 'black'
+                                  },
+                           yaxis_type="log",
+                           yaxis_showgrid=False,
+
+                           legend_orientation="h",
+                           plot_bgcolor='rgb(255,255,255)',
+
+                           height=800)
+
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         context['graph'] = div
-        context['title'] = 'Graph close'
+        context['title'] = 'Graph open'
         return context
 
 

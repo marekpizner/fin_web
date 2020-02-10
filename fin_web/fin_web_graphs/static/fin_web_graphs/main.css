@@ -1,13 +1,13 @@
 body {
-  background: #fafafa;
-  color: #333333;
+  background: #ffffff;
+  color: #000000;
   margin-top: 5rem;
   margin-right: 10rem;
   margin-left: 10rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+  color: #000000;
 }
 
 ul {
@@ -19,7 +19,7 @@ ul {
 }
 
 .site-header .navbar-nav .nav-link {
-  color: #cbd5db;
+  color: #ffffff;
 }
 
 .site-header .navbar-nav .nav-link:hover {
