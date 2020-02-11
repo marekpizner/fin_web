@@ -1,12 +1,9 @@
-from django.http import HttpResponse
-from django.template import loader
+import numpy as np
+import pandas as pd
+import plotly.graph_objs as go
+import plotly.offline as opy
 from django.shortcuts import render
 from django.views.generic import TemplateView
-
-import pandas as pd
-import plotly.offline as opy
-import plotly.graph_objs as go
-import numpy as np
 
 from .models import Olhc
 
@@ -17,7 +14,7 @@ list_of_graphs = [
         'icon': 'fin_web_graphs/img/b.png'
     },
     {
-        'title': 'Close',
+        'title': '200 Week Moving Average Heatmap',
         'url': 'graph_close',
         'icon': 'fin_web_graphs/img/r.png'
     },
@@ -146,25 +143,37 @@ class GraphClose(TemplateView):
         df = df.iloc[::-1]
 
         dates = pd.date_range(end=df.iloc[0]['date'], periods=1400, freq='D')
-        values = np.random.randint(df[:100]['value'].min(), df[:100]['value'].mean(), len(dates))
+        values = np.sort(np.random.randint(df[:100]['value'].min(), df[:100]['value'].max(), len(dates)))
 
         df2 = pd.DataFrame({"date": dates.date, "value": values})
         df = df.append(df2)
         df.sort_values(by=['date'], inplace=True)
 
-        df['EMA'] = df['value'].rolling(window=1400).mean()
-
+        df['WMA'] = df['value'].rolling(window=1400).mean()
         df = df.iloc[1400:]
-        # ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx',
-        #  'toself', 'tonext']
+
+        dd = df.set_index('date')
+        dd.index = pd.to_datetime(dd.index)
+
+        dd['date'] = dd.index.date
+
+        dd = dd.resample('M').ffill()
+        dd['change'] = dd['WMA'].pct_change(periods=1) * 100
 
         trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
                             name='Price BTC (USD)')
 
-        trace2 = go.Scatter(x=df['date'], y=df['EMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
+        trace2 = go.Scatter(x=df['date'], y=df['WMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
                             name='Moving average 1 year')
 
-        data = go.Data([trace1, trace2])
+        trace3 = go.Scatter(x=dd['date'], y=dd['value'], mode='markers', marker={
+            'size': 12,
+            'color': dd['change'],
+            'colorscale': 'Rainbow',
+            'showscale': True
+        }, name='% Monthly Increase of 200 Week Moving Average')
+
+        data = go.Data([trace1, trace2, trace3])
 
         layout = go.Layout(title="200 Week Moving Average Heatmap",
 
@@ -208,7 +217,7 @@ class GraphClose(TemplateView):
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         context['graph'] = div
-        context['title'] = 'Graph open'
+        context['title'] = '200 Week Moving Average Heatmap'
         return context
 
 
