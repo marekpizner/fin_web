@@ -84,7 +84,7 @@ class GraphOpen(TemplateView):
                            xaxis={'title': 'Date',
                                   'showline': True,
                                   'linecolor': 'black',
-                                  'linewidth': 1,
+                                  'linewidth': 2,
 
                                   "showspikes": True,
                                   'spikemode': 'across',
@@ -170,6 +170,12 @@ class GraphClose(TemplateView):
             'size': 12,
             'color': dd['change'],
             'colorscale': 'Rainbow',
+            'colorbar': {
+                "title": {
+                    "text": "% Monthly Increase of 200 Week Moving Average",
+                    "side": "right"
+                }
+            },
             'showscale': True
         }, name='% Monthly Increase of 200 Week Moving Average')
 
@@ -194,7 +200,7 @@ class GraphClose(TemplateView):
                            xaxis_gridcolor='rgba(128,128,128,.5)',
 
                            yaxis={'title': 'Price BTC (USD)',
-                                  'side': 'right',
+                                  'side': 'left',
                                   'showline': True,
                                   'linecolor': 'black',
                                   'linewidth': 2,
