@@ -1,14 +1,16 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import GraphOpen, GraphClose, GraphHigh, index, about_us, graphs
+from .views import GraphMovingAverage, GraphWeekMovingAverage, GraphStockToFlow, index, about_us, graphs
 
 urlpatterns = [
     path('', index, name='index'),
     path('graphs/', graphs, name='graphs'),
     path('about/', about_us, name='about_us'),
-    path('graph_open/', GraphOpen.as_view(), name='graph_open'),
-    path('graph_close/', GraphClose.as_view(), name='graph_close'),
-    path('graph_high/', GraphHigh.as_view(), name='graph_high'),
+
+    path('graph_moving_average/', GraphMovingAverage.as_view(), name='graph_moving_average'),
+    path('graph_week_moving_average/', GraphWeekMovingAverage.as_view(), name='graph_week_moving_average'),
+    path('graph_stock_to_flow/', GraphStockToFlow.as_view(), name='graph_stock_to_flow'),
+
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
