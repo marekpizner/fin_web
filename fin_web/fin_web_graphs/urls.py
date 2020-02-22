@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from .views import GraphMovingAverage, GraphWeekMovingAverage, GraphStockToFlow, index, about_us, graphs
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', index, name='home'),
     path('graphs/', graphs, name='graphs'),
     path('about/', about_us, name='about_us'),
 
