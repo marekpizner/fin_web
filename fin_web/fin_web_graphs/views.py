@@ -253,15 +253,20 @@ class GraphStockToFlow(TemplateView):
             close.append(float(d.close))
             mc.append(float(d.market_cap))
 
-
-
         df = pd.DataFrame({"date": date,
                            "open": open,
                            "high": high,
                            "low": low,
                            "close": close
                            })
-        df['value'] = (df['high'] + df['low'])/2
+
+        df['date'] = pd.to_datetime(df['date'])
+
+        df['value'] = (df['high'] + df['low']) / 2
+        df.set_index(['date'], drop=False, inplace=True)
+
+        firs_day_of_month = df.groupby([df.index.year, df.index.month]).last()
+        firs_day_of_month['number_of_days'] = firs_day_of_month['date'].dt.days_in_month
 
         trace1 = go.Scatter(x=df['date'], y=df['high'], marker_color='rgba(0, 0, 255, .8)', mode="lines")
         trace2 = go.Scatter(x=df['date'], y=df['low'], marker_color='rgba(255, 165, 0, .8)', mode="lines")
