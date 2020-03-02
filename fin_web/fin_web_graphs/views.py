@@ -60,7 +60,9 @@ class GraphMovingAverage(TemplateView):
             x.append(d.date)
             y.append((float(d.high) + float(d.low)) / 2)
         df = pd.DataFrame({"date": x, "value": y})
-        df = df.iloc[::-1]
+        df = df.sort_values(by="date")
+
+        # df = df.iloc[::-1]
 
         df['EMA'] = df['value'].rolling(window=365).mean()
         df['EMA2'] = df['value'].rolling(window=365 * 2).mean() * 5
