@@ -33,7 +33,6 @@ def create_url(start_date, end_date):
 
 
 def get_data(url):
-    print('downloading')
     content = requests.get(url).content
     soup = BeautifulSoup(content, 'html.parser')
     table = soup.find_all('table')
@@ -54,7 +53,6 @@ def get_data(url):
 
 
 def insert_data_to_db(df):
-    print('inserting')
     df['date'] = pd.to_datetime(df['date'])
     # print(df)
     for index, x in df.iterrows():
@@ -73,7 +71,6 @@ def insert_data_to_db(df):
 
 def start():
     start_d, end_d = get_start_end_date_in_db()
-    print(start_d, end_d)
 
     if end_d != get_last_from_db():
         url = create_url(start_d, end_d)

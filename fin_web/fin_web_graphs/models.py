@@ -14,3 +14,10 @@ class Olhc(models.Model):
 
     def __str__(self):
         return str(self.date)
+
+
+class BTC(models.Model):
+    date = models.DateField()
+    value = models.FloatField()
+    btc_count = models.IntegerField()
+    btc_mining_diff = models.FloatField()
