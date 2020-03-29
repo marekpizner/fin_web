@@ -44,7 +44,6 @@ class RSI(AbstractGraph):
         df = self.get_raw_data()
 
         df['date'] = pd.to_datetime(df['date'])
-        df = df.sort_values(by="date")
         df.set_index(['date'], drop=False, inplace=True)
 
         rs = self.calcualte_rsi(df['value'], self.window_1)
@@ -60,7 +59,7 @@ class RSI(AbstractGraph):
         trace2 = go.Scatter(x=df['date'], y=df['rs'], marker_color='rgba(255, 165, 0, .8)', mode="lines", name='RSI')
 
         data = go.Data([trace1, trace2])
-        layout = go.Layout(title="High",
+        layout = go.Layout(title=self.config['title'],
                            xaxis={'title': 'Date',
                                   'showline': True,
                                   'linecolor': 'black',

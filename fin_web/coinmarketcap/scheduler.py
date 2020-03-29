@@ -7,5 +7,5 @@ from .downloader_quandl import start as start_quandl
 def scheduler():
     scheduler = BackgroundScheduler()
     scheduler.add_job(start_coinmarket, 'interval', minutes=24 * 60)
-    scheduler.add_job(start_quandl, 'interval', minutes=1)
+    scheduler.add_job(start_quandl, 'interval', minutes=24*60)
     scheduler.start()

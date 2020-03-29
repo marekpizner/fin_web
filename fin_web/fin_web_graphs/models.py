@@ -21,3 +21,6 @@ class BTC(models.Model):
     value = models.FloatField()
     btc_count = models.IntegerField()
     btc_mining_diff = models.FloatField()
+
+    def __str__(self):
+        return str(self.date)

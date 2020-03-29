@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import math
 from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
 import plotly.offline as opy
@@ -42,39 +42,26 @@ class StockToFlow(AbstractGraph):
             return dif.days
 
         df = self.get_raw_data()
+        df = df.round(2)
 
         df['date'] = pd.to_datetime(df['date'])
         df['days'] = df.apply(lambda x: calculate_date_to_halving(x['date']), axis=1)
-        max_value_for_year = df.resample('y', on='date').max().dropna(how='all')
+        df['max'] = df.shift(periods=365)['btc_count']
+        df['max'] = (df['btc_count'] - df['max'])
+        df['stf'] = df['btc_count'] / df['max']
 
-        max_value_for_year['year'] = max_value_for_year['date'].apply(lambda x: x.year)
-        max_value_for_year['max'] = max_value_for_year['value']
-        max_value_for_year.drop(['date', 'value', 'days', ], axis=1, inplace=True)
+        # Power law formula
+        df['stf'] = 0.4 * (df['stf'] * df['stf'] * df['stf'])
 
-        df['year'] = df['date'].apply(lambda x: x.year)
-
-        df = df.merge(max_value_for_year, on='year', how='left')
-
-        h2_d = pd.date_range(start=pd.to_datetime("28.4.2013"), end=pd.to_datetime("9.7.2016"), freq='D')
-        # h2_v =
-
-        h3_d = pd.date_range(start=pd.to_datetime("10.7.2016"), end=pd.to_datetime("13.5.2020"), freq='D')
-        # h3_v =
-
-        # missing_values = pd.DataFrame({"date": dates.date, "value": values})
-
-        # df['stock_to_flow'] = df['mc'] / df['max']
-        # print()
-
+        df = df[df['date'] >= pd.to_datetime('31.08.2010')]
         return df
 
     def create_layout(self, df):
-        div = []
-        # trace2 = go.Scatter(x=df['date'], y=df['WMA'], marker_color='rgba(0, 255, 0, .8)', mode="lines",
-        #                     name='200 Week Moving Average')
+        trace2 = go.Scatter(x=df['date'], y=df['stf'], marker_color='rgba(255, 60, 60, .8)', mode="lines",
+                            name='stock-to-flow (0.4 * STF ^ 3) almost power law')
 
         trace3 = go.Scatter(x=df['date'], y=df['value'], mode='markers', marker={
-            'size': 12,
+            'size': 10,
             'color': df['days'],
             'colorscale': 'Rainbow',
             'colorbar': {
@@ -84,10 +71,10 @@ class StockToFlow(AbstractGraph):
                 }
             },
             'showscale': True
-        }, name='% Monthly Increase of 200 Week Moving Average')
+        }, name='Price BTC (USD)')
 
-        data = go.Data([trace3])
-        layout = go.Layout(title="200 Week Moving Average Heatmap",
+        data = go.Data([trace3, trace2])
+        layout = go.Layout(title=self.config['title'],
 
                            xaxis={'title': 'Date',
                                   'showline': True,

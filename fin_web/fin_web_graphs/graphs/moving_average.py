@@ -44,7 +44,7 @@ class MovingAverage(AbstractGraph):
                             name='Moving average 2 year')
 
         trace3 = go.Scatter(x=df['date'], y=df['EMA2'], marker_color='rgba(255, 0, 0, .8)', mode="lines",
-                            name="Moving average 2 years * 5")
+                            name=f"Moving average 2 years * {self.multiplier}")
 
         data = go.Data([trace1, trace2, trace3])
 

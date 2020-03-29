@@ -29,6 +29,7 @@ class WeeklyMovingAverage(AbstractGraph):
     def calculate_data(self):
         df = self.get_raw_data()
 
+        df.sort_values(by=['date'], inplace=True)
         df['WMA'] = df['value'].rolling(window=self.shift).mean()
         df = df.iloc[self.shift:]
         df.drop_duplicates(subset='date', keep='first', inplace=True)
