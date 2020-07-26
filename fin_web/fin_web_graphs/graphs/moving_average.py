@@ -1,8 +1,11 @@
 import pandas as pd
-from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
 import plotly.offline as opy
 import math
+import os.path as pathh
+
+from .abstract_graph import AbstractGraph
+
 
 CONFIG = {
     'title': '2-Year MA Multiplier',
@@ -31,10 +34,15 @@ class MovingAverage(AbstractGraph):
         df = self.get_raw_data()
 
         df['EMA'] = df['value'].rolling(window=self.window_2).mean()
-        df['EMA2'] = df['value'].rolling(window=self.window_2).mean() * self.multiplier
+        df['EMA2'] = df['value'].rolling(
+            window=self.window_2).mean() * self.multiplier
 
         df = df[df['date'] >= pd.to_datetime('30.12.2010')]
         return df
+
+    def is_time_to_save_image(self, figure):
+        if not pathh.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'])
 
     def create_layout(self, df):
         trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
@@ -60,7 +68,6 @@ class MovingAverage(AbstractGraph):
                                   "spikethickness": 1,
                                   'spikedash': 'solid',
                                   "spikecolor": 'black'
-
                                   },
                            xaxis_showgrid=True,
                            xaxis_gridcolor='rgba(128,128,128,.5)',
@@ -86,7 +93,7 @@ class MovingAverage(AbstractGraph):
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
-        figure.write_image(self.config['icon_path'])
+        self.is_time_to_save_image(figure)
         div = opy.plot(figure, auto_open=False, output_type='div')
         return div
 

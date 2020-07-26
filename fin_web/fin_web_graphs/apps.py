@@ -6,5 +6,5 @@ class FinWebGraphsConfig(AppConfig):
 
     def ready(self):
         from coinmarketcap import scheduler
-
+        scheduler.run_now()
         scheduler.scheduler()

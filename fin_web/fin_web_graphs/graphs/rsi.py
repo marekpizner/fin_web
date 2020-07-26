@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os.path as path
 
 from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
@@ -32,12 +33,14 @@ class RSI(AbstractGraph):
         d = u.copy()
         u[delta > 0] = delta[delta > 0]
         d[delta < 0] = -delta[delta < 0]
-        u[u.index[period - 1]] = np.mean(u[:period])  # first value is sum of avg gains
+        # first value is sum of avg gains
+        u[u.index[period - 1]] = np.mean(u[:period])
         u = u.drop(u.index[:(period - 1)])
-        d[d.index[period - 1]] = np.mean(d[:period])  # first value is sum of avg losses
+        # first value is sum of avg losses
+        d[d.index[period - 1]] = np.mean(d[:period])
         d = d.drop(d.index[:(period - 1)])
         rs = pd.Series.ewm(u, com=period - 1, adjust=False).mean() / \
-             pd.Series.ewm(d, com=period - 1, adjust=False).mean()
+            pd.Series.ewm(d, com=period - 1, adjust=False).mean()
         return 100 - 100 / (1 + rs)
 
     def calculate_data(self):
@@ -53,10 +56,15 @@ class RSI(AbstractGraph):
         df = df.join(rs)
         return df
 
+    def is_time_to_save_image(self, figure):
+        if not path.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'])
+
     def create_layout(self, df):
         trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
                             name='Price BTC (USD)')
-        trace2 = go.Scatter(x=df['date'], y=df['rs'], marker_color='rgba(255, 165, 0, .8)', mode="lines", name='RSI')
+        trace2 = go.Scatter(
+            x=df['date'], y=df['rs'], marker_color='rgba(255, 165, 0, .8)', mode="lines", name='RSI')
 
         data = go.Data([trace1, trace2])
         layout = go.Layout(title=self.config['title'],
@@ -98,7 +106,7 @@ class RSI(AbstractGraph):
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
-        figure.write_image(self.config['icon_path'])
+        self.is_time_to_save_image(figure)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         return div

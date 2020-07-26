@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os.path as pathh
 
 from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
@@ -28,6 +29,10 @@ class MiningDiff(AbstractGraph):
     def calculate_data(self):
         df = self.get_raw_data()
         return df
+
+    def is_time_to_save_image(self, figure):
+        if not pathh.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'])
 
     def create_layout(self, df):
         trace1 = go.Scatter(x=df['date'], y=df['btc_mining_diff'], marker_color='rgba(0, 0, 255, .8)', mode="lines",
@@ -71,7 +76,7 @@ class MiningDiff(AbstractGraph):
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
-        figure.write_image(self.config['icon_path'])
+        self.is_time_to_save_image(figure)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         return div

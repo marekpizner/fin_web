@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os.path as pathh
 
 from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
@@ -35,12 +36,19 @@ class WeeklyMovingAverage(AbstractGraph):
         df.drop_duplicates(subset='date', keep='first', inplace=True)
 
         df_moving_average_heat_m = df.set_index('date')
-        df_moving_average_heat_m.index = pd.to_datetime(df_moving_average_heat_m.index)
+        df_moving_average_heat_m.index = pd.to_datetime(
+            df_moving_average_heat_m.index)
         df_moving_average_heat_m['date'] = df_moving_average_heat_m.index.date
-        df_moving_average_heat_m = df_moving_average_heat_m.resample('M').ffill()
-        df_moving_average_heat_m['change'] = df_moving_average_heat_m['WMA'].pct_change(periods=1) * 100
+        df_moving_average_heat_m = df_moving_average_heat_m.resample(
+            'M').ffill()
+        df_moving_average_heat_m['change'] = df_moving_average_heat_m['WMA'].pct_change(
+            periods=1) * 100
 
         return df, df_moving_average_heat_m
+
+    def is_time_to_save_image(self, figure):
+        if not pathh.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'])
 
     def create_layout(self, df):
         df, dd = df
@@ -107,7 +115,7 @@ class WeeklyMovingAverage(AbstractGraph):
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
-        figure.write_image(self.config['icon_path'])
+        self.is_time_to_save_image(figure)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         return div

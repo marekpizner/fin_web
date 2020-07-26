@@ -7,7 +7,6 @@ import pandas as pd
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fin_web.settings')
-
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

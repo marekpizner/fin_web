@@ -23,13 +23,16 @@ def downloader_handler(funct):
 
 @downloader_handler
 def get_data():
-    number_of_bitcoins = quandl.get("BCHAIN/TOTBC", authtoken="qrqwdqyPspGBV2MKUy9f")
+    number_of_bitcoins = quandl.get(
+        "BCHAIN/TOTBC", authtoken="qrqwdqyPspGBV2MKUy9f")
     number_of_bitcoins.columns = ['btc_count']
 
-    bitcoin_price = quandl.get("BCHAIN/MKPRU", authtoken="qrqwdqyPspGBV2MKUy9f")
+    bitcoin_price = quandl.get(
+        "BCHAIN/MKPRU", authtoken="qrqwdqyPspGBV2MKUy9f")
     bitcoin_price.columns = ['value']
 
-    difficulty_of_mining = quandl.get("BCHAIN/DIFF", authtoken="qrqwdqyPspGBV2MKUy9f")
+    difficulty_of_mining = quandl.get(
+        "BCHAIN/DIFF", authtoken="qrqwdqyPspGBV2MKUy9f")
     difficulty_of_mining.columns = ['btc_mining_diff']
 
     final_df = number_of_bitcoins
@@ -43,7 +46,7 @@ def get_data():
 
 def insert_data_to_db(df):
     BTC.objects.all().delete()
-
+    print("importing data")
     for index, x in df.iterrows():
         btc = BTC()
 

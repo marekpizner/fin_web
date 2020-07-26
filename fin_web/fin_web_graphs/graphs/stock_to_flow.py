@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import math
+import os.path as pathh
+
+
 from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
 import plotly.offline as opy
@@ -45,7 +48,8 @@ class StockToFlow(AbstractGraph):
         df = df.round(2)
 
         df['date'] = pd.to_datetime(df['date'])
-        df['days'] = df.apply(lambda x: calculate_date_to_halving(x['date']), axis=1)
+        df['days'] = df.apply(
+            lambda x: calculate_date_to_halving(x['date']), axis=1)
         df['max'] = df.shift(periods=365)['btc_count']
         df['max'] = (df['btc_count'] - df['max'])
         df['stf'] = df['btc_count'] / df['max']
@@ -55,6 +59,10 @@ class StockToFlow(AbstractGraph):
 
         df = df[df['date'] >= pd.to_datetime('31.08.2010')]
         return df
+
+    def is_time_to_save_image(self, figure):
+        if not pathh.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'])
 
     def create_layout(self, df):
         trace2 = go.Scatter(x=df['date'], y=df['stf'], marker_color='rgba(255, 60, 60, .8)', mode="lines",
@@ -115,7 +123,7 @@ class StockToFlow(AbstractGraph):
                            height=800)
 
         figure = go.Figure(data=data, layout=layout)
-        figure.write_image(self.config['icon_path'])
+        self.is_time_to_save_image(figure)
         div = opy.plot(figure, auto_open=False, output_type='div')
 
         return div

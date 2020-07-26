@@ -24,7 +24,9 @@ graphs_list = [
 list_of_graphs = []
 
 for g in graphs_list:
-    list_of_graphs.append(g.get_config())
+    config = g.get_config()
+
+    list_of_graphs.append(config)
 
 
 def index(request):
