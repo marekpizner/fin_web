@@ -5,6 +5,7 @@ class FinWebGraphsConfig(AppConfig):
     name = 'fin_web_graphs'
 
     def ready(self):
-        from coinmarketcap import scheduler
-        scheduler.run_now()
-        scheduler.scheduler()
+        pass
+        # from coinmarketcap import scheduler
+        # scheduler.run_now()
+        # scheduler.scheduler()

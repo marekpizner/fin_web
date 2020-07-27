@@ -1,8 +1,6 @@
-version: "3"
+version: "3.7"
 
 services:
-  #  db:
-  #    image: postgres
   web:
     build: .
     command: gunicorn fin_web.wsgi:application --bind 0.0.0.0:8000
@@ -10,5 +8,17 @@ services:
       - .:/code
     ports:
       - "8000:8000"
-#    depends_on:
-#      - db
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    image: postgres:12.3-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=putin
+      - POSTGRES_PASSWORD=cyka_blyat
+      - POSTGRES_DB=bradavka
+volumes:
+  postgres_data:
