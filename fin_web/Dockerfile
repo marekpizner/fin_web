@@ -3,7 +3,7 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
 RUN apk update \
-    && apk add libxml2 postgresql-dev  g++ gcc libxslt-dev gcc python3-dev musl-dev
+    && apk add libxml2 postgresql-dev linux-headers libevent-dev g++ gcc jpeg-dev zlib-dev libxslt-dev gcc python3-dev musl-dev
 
 RUN mkdir /code
 WORKDIR /code
