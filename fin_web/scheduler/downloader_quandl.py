@@ -1,9 +1,9 @@
 import pandas as pd
 import quandl
 import os
+import psycopg2
 
 from datetime import datetime, timedelta
-# from fin_web_graphs.models import BTC
 from sqlalchemy import create_engine
 
 QUANDL_KEY = os.environ['QUANDL_KEY']
@@ -48,37 +48,44 @@ def get_data():
     return final_df
 
 
-# def insert_data_to_db(df):
-#     BTC.objects.all().delete()
-#     print("importing data")
-#     for index, x in df.iterrows():
-#         btc = BTC()
-
-#         btc.date = x['date']
-#         btc.value = x['value']
-#         btc.btc_count = x['btc_count']
-#         btc.btc_mining_diff = x['btc_mining_diff']
-
-#         btc.save()
-
-
-def build_postgres_engine():
+def read_env():
     database = os.environ['SQL_DATABASE']
     user = os.environ['SQL_USER']
     password = os.environ['SQL_PASSWORD']
     host = os.environ['SQL_HOST']
     port = os.environ['SQL_PORT']
 
+    return database, user, password, host, port
+
+
+def build_postgres_engine():
+    database, user, password, host, port = read_env()
     return create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
 
 
-def save_to_postgres(df, engine, table_name):
-    df.to_sql(table_name, engine)
+def create_schema(schema):
+    print('Creating schema')
+    database, user, password, host, port = read_env()
+    conn = psycopg2.connect(
+        f'postgresql://{user}:{password}@{host}:{port}/{database}')
+    cur = conn.cursor()
+    cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
+
+
+def save_to_postgres(df, engine, schema, table_name):
+    # create_schema(schema)
+    print('Uploading')
+    df.to_sql(table_name, engine, index=False,
+              schema=schema, if_exists='replace')
 
 
 def start():
     data = get_data()
     engine = build_postgres_engine()
-    table_name = 'BTC'
-    save_to_postgres(data, engine, table_name)
-    # insert_data_to_db(data)
+    schema = 'fin_web_graphs'
+    table_name = 'btc'
+    save_to_postgres(data, engine, schema, table_name)
+
+
+if __name__ == "__main__":
+    start()

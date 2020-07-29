@@ -14,7 +14,8 @@ class AbstractGraph():
 
     def get_raw_data(self):
         data = BTC.objects.all()
-
+        print('PRINTING !!!')
+        print(data)
         date = []
         value = []
         btc_count = []
