@@ -1,5 +1,7 @@
+import os
 import numpy as np
 import pandas as pd
+
 import plotly.graph_objs as go
 import plotly.offline as opy
 from django.shortcuts import render
@@ -11,7 +13,6 @@ from .graphs.weekly_moving_average import WeeklyMovingAverage
 from .graphs.stock_to_flow import StockToFlow
 from .graphs.rsi import RSI
 from .graphs.mining_diff import MiningDiff
-from .models import Olhc
 
 graphs_list = [
     MovingAverage(None, None, None),
@@ -24,8 +25,12 @@ graphs_list = [
 list_of_graphs = []
 
 for g in graphs_list:
+    print(os.getenv("HOME"))
     config = g.get_config()
-
+    if not os.path.isfile(config['icon']):
+        print('Not icon')
+    if not os.path.isfile(config['icon_path']):
+        print('Not icon_path')
     list_of_graphs.append(config)
 
 

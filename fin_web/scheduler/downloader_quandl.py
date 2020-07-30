@@ -69,11 +69,13 @@ def create_schema(schema):
     conn = psycopg2.connect(
         f'postgresql://{user}:{password}@{host}:{port}/{database}')
     cur = conn.cursor()
-    cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
+    cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema};")
+    conn.commit()
+    conn.close()
 
 
 def save_to_postgres(df, engine, schema, table_name):
-    # create_schema(schema)
+    create_schema(schema)
     print('Uploading')
     df.to_sql(table_name, engine, index=False,
               schema=schema, if_exists='replace')
