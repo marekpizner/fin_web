@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.offline as opy
 import math
-import os.path as pathh
+import os.path as path
 
 from .abstract_graph import AbstractGraph
 
@@ -41,8 +41,8 @@ class MovingAverage(AbstractGraph):
         return df
 
     def is_time_to_save_image(self, figure):
-        if not pathh.exists(self.config['icon_path']):
-            figure.write_image(self.config['icon_path'])
+        if not path.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'], scale=0.5)
 
     def create_layout(self, df):
         trace1 = go.Scatter(x=df['date'], y=df['value'], marker_color='rgba(0, 0, 255, .8)', mode="lines",

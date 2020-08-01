@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import os.path as pathh
+import os.path as path
 
 from .abstract_graph import AbstractGraph
 import plotly.graph_objs as go
@@ -47,8 +47,8 @@ class WeeklyMovingAverage(AbstractGraph):
         return df, df_moving_average_heat_m
 
     def is_time_to_save_image(self, figure):
-        if not pathh.exists(self.config['icon_path']):
-            figure.write_image(self.config['icon_path'])
+        if not path.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'], scale=0.5)
 
     def create_layout(self, df):
         df, dd = df

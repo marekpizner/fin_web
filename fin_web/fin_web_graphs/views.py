@@ -25,17 +25,16 @@ graphs_list = [
 list_of_graphs = []
 
 for g in graphs_list:
-    print(os.getenv("HOME"))
     config = g.get_config()
-    if not os.path.isfile(config['icon']):
-        print('Not icon')
     if not os.path.isfile(config['icon_path']):
         print('Not icon_path')
     list_of_graphs.append(config)
 
 
 def index(request):
-    context = {}
+    context = {
+
+    }
     return render(request, 'fin_web_graphs/index.html', context)
 
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
-import os.path as pathh
+import os.path as path
 
 
 from .abstract_graph import AbstractGraph
@@ -61,8 +61,8 @@ class StockToFlow(AbstractGraph):
         return df
 
     def is_time_to_save_image(self, figure):
-        if not pathh.exists(self.config['icon_path']):
-            figure.write_image(self.config['icon_path'])
+        if not path.exists(self.config['icon_path']):
+            figure.write_image(self.config['icon_path'], scale=0.5)
 
     def create_layout(self, df):
         trace2 = go.Scatter(x=df['date'], y=df['stf'], marker_color='rgba(255, 60, 60, .8)', mode="lines",
