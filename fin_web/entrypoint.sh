@@ -1,6 +1,17 @@
+#!/bin/sh
 
-echo "* * * * * /scheduler/run.sh >> /var/log/cron.log 2>&1
-\# This extra line makes it a valid cron" > scheduler.txt
+if [ "$DATABASE" = "postgres" ]
+then
+    echo "Waiting for postgres..."
 
-crontab scheduler.txt
-cron -f
+    while ! nc -z $SQL_HOST $SQL_PORT; do
+      sleep 0.1
+    done
+
+    echo "PostgreSQL started"
+fi
+
+python manage.py flush --no-input
+python manage.py migrate
+
+exec "$@"
